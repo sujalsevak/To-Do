@@ -18,7 +18,7 @@ To get started with the Kanban Board, follow these steps:
 
 2. Navigate to the project directory:
    ```bash
-   cd kanban_board
+   cd to-do_task_tracker
  
 3. Install dependencies by running: `npm install` or `yarn install`
 
