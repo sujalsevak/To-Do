@@ -1,10 +1,12 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: 'class', // Ensure this is present for dark mode
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    // Add any other directories where you use Tailwind classes
   ],
   theme: {
     extend: {
@@ -17,4 +19,5 @@ const config: Config = {
   },
   plugins: [],
 };
+
 export default config;

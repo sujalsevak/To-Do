@@ -102,10 +102,12 @@ export const Column = ({ title, headingColor, cards, column, setCards }: TColumn
   return (
     <div className="flex-1 mb-2.5 lg:mb-0">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className={`font-semibold text-lg ${headingColor} uppercase tracking-wider`}>
+        {/* Apply headingColor using inline style for exact color matching */}
+        <h3 className={`font-semibold text-lg uppercase tracking-wider`} style={{ color: headingColor }}>
           {title}
         </h3>
-        <span className="text-sm text-neutral-400 font-mono px-2 py-0.5 rounded-full bg-neutral-700/50">
+        {/* FIX: Changed text-white to text-neutral-800 dark:text-white for better visibility in both modes */}
+        <span className="text-sm text-neutral-800 dark:text-white font-mono px-2 py-0.5 rounded-full bg-neutral-700/50">
           {filteredCards?.length}
         </span>
       </div>

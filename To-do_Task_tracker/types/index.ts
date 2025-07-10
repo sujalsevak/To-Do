@@ -1,45 +1,60 @@
-// In your types/index.ts file
+    // types/index.ts
 
-// Define the union type for your columns
-export type TColumn = "backlog" | "todo" | "doing" | "done";
+    // Define the comprehensive TColumn type here, including all possible states
+    export type TColumn = "backlog" | "todo" | "doing" | "active" | "in-progress" | "done";
 
-// Update TCard to use TColumn for its 'column' property
-export type TCard = {
-  id: string;
-  title: string;
-  column: TColumn; // Use the TColumn type here
-  // Add any other properties your card objects have
-};
+    // You can also define TCard here if it's used across multiple files
+    export interface TCard {
+      id: string;
+      title: string;
+      description?: string; // Added description as optional
+      column: TColumn;
+    }
 
-// Define the props for your Column component
-export type TColumnProps = {
-  title: string;
-  headingColor: string;
-  cards: TCard[];
-  column: TColumn; // Use the TColumn type here
-  setCards: React.Dispatch<React.SetStateAction<TCard[]>>;
-};
+    // Add TAddCardProps interface here and export it
+    export interface TAddCardProps {
+      column: TColumn;
+      setCards: React.Dispatch<React.SetStateAction<TCard[]>>;
+    }
 
-// Define the props for your BurnBarrel component (if not already defined)
-export type TBurnBarrelProps = {
-  setCards: React.Dispatch<React.SetStateAction<TCard[]>>;
-};
+    // FIX: Add ColumnDistributionChartProps interface here and export it
+    export interface ColumnDistributionChartProps {
+      cards: TCard[];
+      columns: TColumn[]; // This property is crucial for the ColumnDistributionChart
+    }
 
-// Define the props for your Card component (if not already defined)
-export type TCardComponentProps = {
-  card: TCard;
-  handleDragStart: (event: React.DragEvent<HTMLDivElement>, card: TCard) => void;
-  setCards: React.Dispatch<React.SetStateAction<TCard[]>>;
-};
+    // Define and export TBurnBarrelProps (from previous discussion)
+    export interface TBurnBarrelProps {
+      setCards: React.Dispatch<React.SetStateAction<TCard[]>>;
+    }
 
-// Define the props for your AddCard component (if not already defined)
-export type TAddCardProps = {
-  column: TColumn;
-  setCards: React.Dispatch<React.SetStateAction<TCard[]>>;
-};
+    // FIX: Define and export TDropIndicatorProps
+    export interface TDropIndicatorProps {
+      beforeId: string | null;
+      column: TColumn;
+    }
 
-// Define the props for your DropIndicator component (if not already defined)
-export type TDropIndicatorProps = {
-  beforeId: string;
-  column: TColumn;
-};
+    // FIX: Define and export TCardComponentProps for the Card component
+    export interface TCardComponentProps {
+      card: TCard;
+      setCards: React.Dispatch<React.SetStateAction<TCard[]>>;
+      // FIX: Updated handleDragStart to accept React.DragEvent<HTMLDivElement>
+      handleDragStart: (e: React.DragEvent<HTMLDivElement>, card: TCard) => void;
+    }
+
+    // FIX: Define and export TColumnProps for the Column component
+    export interface TColumnProps {
+      title: string;
+      column: TColumn;
+      cards: TCard[];
+      setCards: React.Dispatch<React.SetStateAction<TCard[]>>;
+      // FIX: Add headingColor to TColumnProps
+      headingColor: string;
+    }
+
+    // FIX: Define and export TColumnButtonsProps for the ColumnButtons component
+    export interface TColumnButtonsProps {
+      column: TColumn;
+      handleMove: (newColumn: TColumn) => void;
+    }
+    

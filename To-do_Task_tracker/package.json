@@ -1,12 +1,12 @@
 {
-  "name": "kanban_board",
-  "author": "MuhdHanish",
+  "name": "TodoTask_Tracker",
+  "author": "Sujal_Sevak",
   "description": "This is a dynamic and interactive Kanban board built with Next.js, Typescript, Tailwind CSS and Framer Motion.",
   "version": "0.1.0",
   "private": true,
   "keywords": [
-    "Kanban",
-    "Board",
+    "TodoTask",
+    "Tracker",
     "Next.js",
     "Typescript",
     "Tailwind CSS",

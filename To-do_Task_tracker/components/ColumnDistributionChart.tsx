@@ -4,51 +4,56 @@ import { TCard, TColumn } from '@/types'; // Ensure TCard and TColumn are correc
 
 interface ColumnDistributionChartProps {
   cards: TCard[];
+  // FIX: Add the 'columns' prop here, as it's passed from Board.tsx
+  columns: TColumn[];
 }
 
 // Define colors for each column. These should ideally match your column heading colors or be complementary.
-// Updated to more vibrant and eye-catching colors
-const COLORS = {
-  backlog: '#FF6347', // Tomato Red
-  todo: '#FFD700',    // Gold Yellow
-  doing: '#1E90FF',   // Dodger Blue
-  done: '#32CD32',    // Lime Green
+// Updated to more vibrant and eye-catching colors, covering all columns defined in Board.tsx
+const COLORS: { [key in TColumn]?: string } = {
+  backlog: '#FF6347',      // Tomato Red
+  todo: '#FFD700',         // Gold Yellow
+  doing: '#1E90FF',        // Dodger Blue
+  active: '#8A2BE2',       // Blue Violet
+  'in-progress': '#FFA500', // Orange
+  done: '#32CD32',         // Lime Green
 };
 
-// Removed renderCustomizedLabel as labels will no longer be on the slices
-
-export const ColumnDistributionChart: React.FC<ColumnDistributionChartProps> = ({ cards }) => {
+export const ColumnDistributionChart: React.FC<ColumnDistributionChartProps> = ({ cards, columns }) => {
   // Process cards data to get counts for each column
   const data = React.useMemo(() => {
-    const columnCounts: { [key in TColumn]?: number } = {
-      backlog: 0,
-      todo: 0,
-      doing: 0,
-      done: 0,
-    };
+    const columnCounts: { [key: string]: number } = {};
 
+    // Initialize counts for all provided columns to ensure they appear in the data, even if 0
+    columns.forEach(col => {
+        columnCounts[col] = 0;
+    });
+
+    // Increment counts based on cards
     cards.forEach(card => {
+      // Ensure the card's column exists in the initialized counts
       if (columnCounts[card.column] !== undefined) {
-        columnCounts[card.column]!++;
+        columnCounts[card.column]++;
       }
     });
 
     // Convert counts to an array format suitable for Recharts
-    // Only show columns that have cards in the chart
-    return Object.entries(columnCounts)
-      .map(([columnName, count]) => ({
-        name: columnName as TColumn,
-        value: count || 0,
+    // Filter out columns with 0 cards for the chart itself, but keep them for the legend
+    return columns
+      .map(colName => ({
+        name: colName,
+        value: columnCounts[colName] || 0, // Use 0 if no cards in this column
       }))
-      .filter(entry => entry.value > 0);
-  }, [cards]); // Recalculate data whenever cards array changes
+      .filter(entry => entry.value > 0); // Only include columns with cards in the pie chart slices
+  }, [cards, columns]); // Recalculate data whenever cards or columns array changes
 
   // Calculate total cards for percentage calculation in the custom legend
   const totalCards = cards.length;
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
-      <h2 className="text-xl font-bold text-neutral-100 mb-4">Task Distribution</h2>
+      {/* FIX: Changed text-neutral-100 to text-neutral-800 dark:text-neutral-100 for theme-aware visibility */}
+      <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-100 mb-4">Task Distribution</h2>
 
       {/* Container for Pie Chart (above) and Custom Legend (below) */}
       {/* Re-added chart-glow-animation here for the container glow */}
@@ -83,7 +88,7 @@ export const ColumnDistributionChart: React.FC<ColumnDistributionChartProps> = (
               animationDuration={800} // Animation duration in milliseconds
             >
               {data.map((entry, index) => (
-                <Cell key={`cell-${entry.name}`} fill={COLORS[entry.name] || '#ccc'} />
+                <Cell key={`cell-${entry.name}`} fill={COLORS[entry.name as TColumn] || '#ccc'} />
               ))}
             </Pie>
             <Tooltip
@@ -101,24 +106,22 @@ export const ColumnDistributionChart: React.FC<ColumnDistributionChartProps> = (
 
         {/* Custom Legend/Summary Section - now positioned below the chart */}
         <div className="flex flex-wrap justify-center gap-4 mt-6 p-2 rounded-lg bg-neutral-700/30 w-full">
-          {Object.entries(COLORS).map(([columnName, color]) => {
-            const entry = data.find(item => item.name === columnName as TColumn);
+          {/* Iterate over the 'columns' prop to ensure all board columns are listed in the legend */}
+          {columns.map((columnName) => {
+            const color = COLORS[columnName] || '#ccc'; // Get color, with fallback
+            const entry = data.find(item => item.name === columnName);
             const percentage = totalCards > 0 ? ((entry?.value || 0) / totalCards) * 100 : 0;
 
-            // Only show legend items for columns that have cards (or have a defined color)
-            if (entry || COLORS[columnName as TColumn]) {
-              return (
-                <div key={columnName} className="flex items-center gap-2 text-neutral-200 text-sm">
-                  <span
-                    className="w-4 h-4 rounded-sm flex-shrink-0"
-                    style={{ backgroundColor: color }}
-                  ></span>
-                  <span className="font-medium whitespace-nowrap">{columnName.charAt(0).toUpperCase() + columnName.slice(1)}:</span>
-                  <span className="font-bold whitespace-nowrap" style={{ color: color }}>{percentage.toFixed(0)}%</span>
-                </div>
-              );
-            }
-            return null;
+            return (
+              <div key={columnName} className="flex items-center gap-2 text-neutral-200 text-sm">
+                <span
+                  className="w-4 h-4 rounded-sm flex-shrink-0"
+                  style={{ backgroundColor: color }}
+                ></span>
+                <span className="font-medium whitespace-nowrap">{columnName.charAt(0).toUpperCase() + columnName.slice(1).replace('-', ' ')}:</span>
+                <span className="font-bold whitespace-nowrap" style={{ color: color }}>{percentage.toFixed(0)}%</span>
+              </div>
+            );
           })}
         </div>
       </div>
